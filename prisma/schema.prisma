@@ -18,21 +18,22 @@ enum UserRole {
 }
 
 model User {
-  id               BigInt         @id @default(autoincrement())
-  username         String         @unique
-  password         String //has to be stored as hash using bcrypt
-  email            String?        @unique //email is not necessary for sign up
-  mobileNumber     String         @unique
-  state            String
-  country          String
-  sentMessages     Message[]      @relation("sender")
-  receivedMessages Message[]      @relation("receiver")
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  role             UserRole
-  tours            OfferedTour[] //users with role TravelAgent will be able to offer tours.
-  reviews          Review[]
-  searchHistory    SearchHistory?
+  id                   BigInt         @id @default(autoincrement())
+  username             String         @unique
+  password             String //has to be stored as hash using bcrypt
+  email                String?        @unique //email is not necessary for sign up
+  mobileNumber         String         @unique
+  state                String
+  country              String
+  sentMessages         Message[]      @relation("sender")
+  receivedMessages     Message[]      @relation("receiver")
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  role                 UserRole
+  tours                OfferedTour[] //users with role TravelAgent will be able to offer tours.
+  reviews              Review[]
+  searchHistory        SearchHistory?
+  bookingsFromCustomer Booking[]      @relation("customer")
 
   @@index([id, username, email]) //indexing is done for faster lookups in the table when the size of the table grows.
 }
@@ -52,7 +53,7 @@ model Message {
 }
 
 model OfferedTour {
-  id            BigInt   @id @default(autoincrement())
+  id            BigInt    @id @default(autoincrement())
   places        Place[]
   //many to many relation between places and offeredTours
   //since one tour can have multiple places and one place
@@ -62,8 +63,10 @@ model OfferedTour {
   startDate     DateTime
   endDate       DateTime
   facilities    String[] //different facilities to be stored as different strings
-  agent         User     @relation(fields: [agentId], references: [id])
+  agent         User      @relation(fields: [agentId], references: [id])
   agentId       BigInt
+  bookings      Booking[]
+  @@index([id, agentId])
 }
 
 model Place {
@@ -74,6 +77,7 @@ model Place {
   photos   String[] //array of urls to be rendered
   reviews  Review[]
   rating   Decimal
+  @@index([id])
 }
 
 model Review {
@@ -85,6 +89,7 @@ model Review {
   placeId BigInt?
   agent   User     @relation(fields: [agentId], references: [id]) //review can be of agent
   agentId BigInt
+  @@index([id, placeId, agentId])
 }
 
 model SearchHistory {
@@ -92,11 +97,37 @@ model SearchHistory {
   search String[]
   user   User     @relation(fields: [userId], references: [id])
   userId BigInt   @unique
+  @@index([id])
 }
 
-model PreviousToursDetails {
-  id         BigInt  @id @default(autoincrement())
-  place      String
+//booking status enum
+enum BookingStatus {
+  Success
+  Failure
+  Processing
+}
+
+model Booking {
+  id         BigInt        @id @default(autoincrement())
+  customer   User          @relation("customer", fields: [customerId], references: [id])
+  customerId BigInt
+  tour       OfferedTour   @relation(fields: [tourId], references: [id])
+  tourId     BigInt
+  persons    Person[]
   noOfPeople Int
-  price      Decimal
+  status     BookingStatus
+  totalPrice Decimal  //offeredTour.noOfPeople
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  @@index([id, customerId])
+}
+
+model Person {
+  id        BigInt  @id @default(autoincrement())
+  name      String
+  age       Int
+  proof     String //proof like aadhar card or pan card
+  bookings  Booking @relation(fields: [bookingId], references: [id])
+  bookingId BigInt
+  @@index([id, bookingId])
 }
