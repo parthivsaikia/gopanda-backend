@@ -93,3 +93,10 @@ model SearchHistory {
   user   User     @relation(fields: [userId], references: [id])
   userId BigInt   @unique
 }
+
+model PreviousToursDetails {
+  id         BigInt  @id @default(autoincrement())
+  place      String
+  noOfPeople Int
+  price      Decimal
+}
