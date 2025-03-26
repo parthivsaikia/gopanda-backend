@@ -30,10 +30,12 @@ model User {
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
   role                 UserRole
-  tours                OfferedTour[] //users with role TravelAgent will be able to offer tours.
+  offeredTours         OfferedTour[] //users with role TravelAgent will be able to offer tours.
   reviews              Review[]
   searchHistory        SearchHistory?
   bookingsFromCustomer Booking[]      @relation("customer")
+  wishList             WishList?
+  notification         Notification?
 
   @@index([id, username, email]) //indexing is done for faster lookups in the table when the size of the table grows.
 }
@@ -53,42 +55,46 @@ model Message {
 }
 
 model OfferedTour {
-  id            BigInt    @id @default(autoincrement())
-  places        Place[]
-  //many to many relation between places and offeredTours
-  //since one tour can have multiple places and one place
-  //can be part of multiple tours
+  id            BigInt      @id @default(autoincrement())
   minimumPeople Int
   price         Decimal
-  startDate     DateTime
-  endDate       DateTime
+  itineraries   Itinerary[]
   facilities    String[] //different facilities to be stored as different strings
-  agent         User      @relation(fields: [agentId], references: [id])
+  agent         User        @relation(fields: [agentId], references: [id])
   agentId       BigInt
   bookings      Booking[]
+  WishList      WishList[]
+  startDate     DateTime
+  endDate       DateTime
+  reviews       Review[]
+
   @@index([id, agentId])
 }
 
 model Place {
-  id       BigInt        @id @default(autoincrement())
-  name     String
-  location String //url of location
-  tours    OfferedTour[]
-  photos   String[] //array of urls to be rendered
-  reviews  Review[]
-  rating   Decimal
+  id        BigInt      @id @default(autoincrement())
+  name      String
+  location  String //url of location
+  photos    String[] //array of urls to be rendered
+  reviews   Review[]
+  rating    Decimal
+  itinerary Itinerary[]
+
   @@index([id])
 }
 
 model Review {
-  id      BigInt   @id @default(autoincrement())
-  star    Int
-  text    String
-  photos  String[]
-  Place   Place?   @relation(fields: [placeId], references: [id]) //review can be of place
-  placeId BigInt?
-  agent   User     @relation(fields: [agentId], references: [id]) //review can be of agent
-  agentId BigInt
+  id            BigInt      @id @default(autoincrement())
+  star          Int
+  text          String
+  photos        String[]
+  Place         Place?      @relation(fields: [placeId], references: [id]) //review can be of place
+  placeId       BigInt?
+  agent         User        @relation(fields: [agentId], references: [id]) //review can be of agent
+  agentId       BigInt
+  offeredTour   OfferedTour @relation(fields: [offeredTourId], references: [id])
+  offeredTourId BigInt
+
   @@index([id, placeId, agentId])
 }
 
@@ -97,14 +103,16 @@ model SearchHistory {
   search String[]
   user   User     @relation(fields: [userId], references: [id])
   userId BigInt   @unique
+
   @@index([id])
 }
 
 //booking status enum
 enum BookingStatus {
-  Success
-  Failure
-  Processing
+  Pending
+  Confirmed
+  Cancelled
+  Completed
 }
 
 model Booking {
@@ -116,12 +124,15 @@ model Booking {
   persons    Person[]
   noOfPeople Int
   status     BookingStatus
-  totalPrice Decimal  //offeredTour.noOfPeople
+  totalPrice Decimal //offeredTour.price * noOfPeople
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
-  @@index([id, customerId])
+  Payment    Payment?
+
+  @@index([id, customerId, tourId])
 }
 
+//model for people who are not users e.g. a person can book for the whole family without creating accounts for all
 model Person {
   id        BigInt  @id @default(autoincrement())
   name      String
@@ -129,5 +140,81 @@ model Person {
   proof     String //proof like aadhar card or pan card
   bookings  Booking @relation(fields: [bookingId], references: [id])
   bookingId BigInt
+
   @@index([id, bookingId])
+}
+
+enum PaymentStatus {
+  Success
+  Pending
+  Failure
+  Refunded
+}
+
+//incomplete for now
+model Payment {
+  id            BigInt        @id @default(autoincrement())
+  method        String
+  status        PaymentStatus
+  booking       Booking       @relation(fields: [bookingId], references: [id])
+  bookingId     BigInt        @unique
+  amount        Decimal
+  transactionId String        @unique
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Itinerary {
+  id         BigInt      @id @default(autoincrement())
+  activities Activity[]
+  day        Int //e.g. day1, day2
+  place      Place?      @relation(fields: [placeId], references: [id])
+  startTime  DateTime
+  endTime    DateTime
+  placeId    BigInt?
+  tour       OfferedTour @relation(fields: [tourId], references: [id])
+  tourId     BigInt
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@index([id, placeId, tourId])
+}
+
+model Activity {
+  id          BigInt    @id @default(autoincrement())
+  title       String
+  itinerary   Itinerary @relation(fields: [itineraryId], references: [id])
+  itineraryId BigInt
+
+  @@index([id, itineraryId])
+}
+
+//Notification type
+enum NotificationType {
+  Warning
+  Greeting
+  Information
+}
+
+model Notification {
+  id        BigInt           @id @default(autoincrement())
+  text      String
+  type      NotificationType
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  user      User             @relation(fields: [userId], references: [id])
+  userId    BigInt           @unique
+
+  @@index([id, userId])
+}
+
+model WishList {
+  id        BigInt        @id @default(autoincrement())
+  tours     OfferedTour[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  user      User          @relation(fields: [userId], references: [id])
+  userId    BigInt        @unique
+
+  @@index([id, userId])
 }
