@@ -18,20 +18,21 @@ enum UserRole {
 }
 
 model User {
-  id               BigInt        @id @default(autoincrement())
-  username         String        @unique
+  id               BigInt         @id @default(autoincrement())
+  username         String         @unique
   password         String //has to be stored as hash using bcrypt
-  email            String?       @unique //email is not necessary for sign up
-  mobileNumber     String        @unique
+  email            String?        @unique //email is not necessary for sign up
+  mobileNumber     String         @unique
   state            String
   country          String
-  sentMessages     Message[]     @relation("sender")
-  receivedMessages Message[]     @relation("receiver")
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  sentMessages     Message[]      @relation("sender")
+  receivedMessages Message[]      @relation("receiver")
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
   role             UserRole
   tours            OfferedTour[] //users with role TravelAgent will be able to offer tours.
   reviews          Review[]
+  searchHistory    SearchHistory?
 
   @@index([id, username, email]) //indexing is done for faster lookups in the table when the size of the table grows.
 }
@@ -80,8 +81,15 @@ model Review {
   star    Int
   text    String
   photos  String[]
-  Place   Place?   @relation(fields: [placeId], references: [id])
+  Place   Place?   @relation(fields: [placeId], references: [id]) //review can be of place
   placeId BigInt?
-  agent   User     @relation(fields: [agentId], references: [id])
+  agent   User     @relation(fields: [agentId], references: [id]) //review can be of agent
   agentId BigInt
+}
+
+model SearchHistory {
+  id     BigInt   @id @default(autoincrement())
+  search String[]
+  user   User     @relation(fields: [userId], references: [id])
+  userId BigInt   @unique
 }
