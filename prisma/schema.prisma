@@ -38,13 +38,13 @@ model User {
   wishList             WishList?
   notification         Notification?
 
-  //indexing is done for faster lookups in the table when the size of the table grows.
   name          String
   emailVerified Boolean
   image         String?
   sessions      Session[]
   accounts      Account[]
 
+  //indexing is done for faster lookups in the table when the size of the table grows.
   @@index([id, username, email])
   @@map("user")
 }
