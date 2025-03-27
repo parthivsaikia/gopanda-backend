@@ -25,6 +25,7 @@
     "@stylistic/eslint-plugin": "^4.2.0",
     "@types/eslint__js": "^8.42.3",
     "@types/express": "^5.0.1",
+    "@types/pg": "^8.11.11",
     "eslint": "^9.23.0",
     "prisma": "^6.5.0",
     "ts-node-dev": "^2.0.0",
@@ -34,9 +35,11 @@
   "dependencies": {
     "@prisma/client": "^6.5.0",
     "@types/cors": "^2.8.17",
+    "better-auth": "^1.2.5",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "pg": "^8.14.1"
   }
 }
