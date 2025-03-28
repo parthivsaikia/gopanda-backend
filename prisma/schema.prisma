@@ -41,7 +41,6 @@ model User {
   name          String
   emailVerified Boolean   @default(false)
   image         String?
-  sessions      Session[]
   accounts      Account[]
 
   //indexing is done for faster lookups in the table when the size of the table grows.
@@ -231,21 +230,6 @@ model WishList {
   userId    BigInt        @unique
 
   @@index([id, userId])
-}
-
-model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime
-  updatedAt DateTime
-  ipAddress String?
-  userAgent String?
-  userId    BigInt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([token])
-  @@map("session")
 }
 
 model Account {
