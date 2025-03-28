@@ -1,48 +1,16 @@
 import { Request, Response } from "express";
 import { SignupUser } from "../utils/types";
-import { auth } from "../lib/auth";
-import { createUser } from "../actions/users";
+import bcrypt from "bcrypt";
 
-export const userSignup = async (
-  req: Request<unknown, unknown, SignupUser>,
-  res: Response,
-): Promise<void> => {
-  const {
-    username,
-    name,
-    password,
-    email,
-    mobileNumber,
-    state,
-    country,
-    role,
-  } = req.body;
+import { storeUser, getUsers } from "../actions/users";
 
-  try {
-    const response = await auth.api.signUpEmail({
-      body: {
-        name,
-        email,
-        password,
-      },
-      asResponse: true,
-    });
-    await createUser({
-      username,
-      name,
-      password,
-      email,
-      mobileNumber,
-      state,
-      country,
-      role,
-    });
-    res.json(response);
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : "Signup failed due to unknown error.";
-    res.status(500).json(errorMessage);
-  }
+export const createUser = async (req: Request<unknown, unknown, SignupUser>, res: Response) => {
+  const { username, name, password, email, mobileNumber, state, country, role } = req.body;
+  const saltRound = 10
+  const hashedPassword =
+};
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  const users = await getUsers();
+  res.json(users);
 };
