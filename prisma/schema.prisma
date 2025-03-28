@@ -39,7 +39,7 @@ model User {
   notification         Notification?
 
   name          String
-  emailVerified Boolean
+  emailVerified Boolean   @default(false)
   image         String?
   sessions      Session[]
   accounts      Account[]

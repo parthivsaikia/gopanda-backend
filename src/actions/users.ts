@@ -1,6 +1,6 @@
 import prisma from "../../prisma/prisma-client";
 import { UserRole } from "@prisma/client";
-export const createUser = async ({
+export const storeUser = async ({
   username,
   name,
   password,
@@ -31,4 +31,25 @@ export const createUser = async ({
       role,
     },
   });
+};
+
+export const getUsers = async () => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        name: true,
+        username: true,
+        state: true,
+        country: true,
+        role: true,
+      },
+    });
+    return users;
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "Unknown error while retrieving users";
+    throw new Error(`Error while retrieving users ${errorMessage}`);
+  }
 };
