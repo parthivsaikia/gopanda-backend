@@ -19,18 +19,26 @@ export const storeUser = async ({
   country: string;
   role: UserRole;
 }) => {
-  await prisma.user.create({
-    data: {
-      username,
-      name,
-      password,
-      email,
-      mobileNumber,
-      state,
-      country,
-      role,
-    },
-  });
+  try {
+    await prisma.user.create({
+      data: {
+        username,
+        name,
+        password,
+        email,
+        mobileNumber,
+        state,
+        country,
+        role,
+      },
+    });
+  } catch (error) {
+    const errorMsg =
+      error instanceof Error
+        ? `Error in storing user to db: ${error.message}`
+        : `unknown error`;
+    throw new Error(errorMsg);
+  }
 };
 
 export const getUsers = async () => {
