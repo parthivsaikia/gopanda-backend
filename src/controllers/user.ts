@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { SignupUser } from "../utils/types";
 import bcrypt from "bcrypt";
 import { storeUser, getUsers } from "../actions/users";
-import prisma from "../../prisma/prisma-client";
 
 export const createUser = async (
   req: Request<unknown, unknown, SignupUser>,
