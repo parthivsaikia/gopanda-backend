@@ -1,37 +1,15 @@
-import prisma from "../../prisma/prisma-client";
-import { UserRole } from "@prisma/client";
-export const storeUser = async ({
-  username,
-  name,
-  password,
-  email,
-  mobileNumber,
-  state,
-  country,
-  role,
-}: {
-  username: string;
-  name: string;
-  password: string;
-  email: string;
-  mobileNumber: string;
-  state: string;
-  country: string;
-  role: UserRole;
-}) => {
+import prisma from "../../prisma/prisma-client";;
+import { SignupUser } from "../utils/types";
+
+export const storeUser = async (userData: SignupUser) => {
   try {
-    await prisma.user.create({
-      data: {
-        username,
-        name,
-        password,
-        email,
-        mobileNumber,
-        state,
-        country,
-        role,
-      },
+    const user = await prisma.user.create({
+      data: userData,
+      omit: {
+        password: true
+      }
     });
+    return user;
   } catch (error) {
     const errorMsg =
       error instanceof Error
