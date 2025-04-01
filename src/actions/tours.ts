@@ -1,4 +1,5 @@
 import prisma from "../../prisma/prisma-client";
+import { CreatedTour } from "../utils/types";
 
 import { PrismaInputEditTourDTO, PrismaInputTourDTO } from "../utils/types";
 
