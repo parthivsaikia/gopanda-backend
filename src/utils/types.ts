@@ -1,4 +1,4 @@
-import { Booking, Itinerary, Prisma, Review, UserRole, WishList } from "@prisma/client";
+import { Itinerary, Prisma, UserRole } from "@prisma/client";
 
 
 export interface SignupUser {
@@ -15,8 +15,8 @@ export interface SignupUser {
 export interface CreatedTour {
   minimumPeople: number,
   price: Prisma.Decimal,
-  // itineraries?: Itinerary[],
-  // facilities?: string[],
+  itineraries?: Itinerary[],
+  facilities?: string[],
   agentId: bigint,
 
   startDate: Date,
