@@ -42,7 +42,7 @@ export const createTour = async (
 ) => {
   const user = req.user as User;
   if (!user) {
-    res.status(403).json({ error: "User not logged in." })
+    res.status(403).json({ error: "User not logged in." });
   }
   const { minimumPeople, price, startDate, endDate } = req.body;
   try {
@@ -109,3 +109,34 @@ export const getTour = async (
     next(error);
   }
 };
+
+// export const createTour = async (
+//   req: Request<unknown, unknown, CreatedTour>,
+//   res: Response,
+// ) => {
+//   const user = req.user as User;
+//   const { minimumPeople, price, startDate, endDate } = req.body;
+//   try {
+//     const tour = await storeTour({
+//       minimumPeople,
+//       price: new Prisma.Decimal(price),
+//       agentId: user.id,
+//       startDate,
+//       endDate,
+//     });
+//     const toBeJsonTour = {
+//       minimumPeople: tour.minimumPeople,
+//       price: tour.price,
+//       agentId: tour.agentId.toString(),
+//       startDate: tour.startDate,
+//       endDate: tour.endDate,
+//     };
+//     return res.json(toBeJsonTour);
+//   } catch (err) {
+//     const errorMessage =
+//       err instanceof Error
+//         ? `error in creating tour: ${err.message}`
+//         : `unknown error in creating user.`;
+//     res.status(400).json({ error: errorMessage });
+//   }
+// };
