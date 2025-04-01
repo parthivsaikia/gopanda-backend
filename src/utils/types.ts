@@ -1,4 +1,5 @@
-import { UserRole } from "@prisma/client";
+import { Itinerary, Prisma, UserRole } from "@prisma/client";
+
 
 export interface SignupUser {
   username: string;
@@ -9,4 +10,15 @@ export interface SignupUser {
   state: string;
   country: string;
   role: UserRole;
+}
+
+export interface CreatedTour {
+  minimumPeople: number,
+  price: Prisma.Decimal,
+  itineraries?: Itinerary[],
+  facilities?: string[],
+  agentId: bigint,
+
+  startDate: Date,
+  endDate: Date,
 }
