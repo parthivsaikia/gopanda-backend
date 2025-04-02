@@ -1,7 +1,7 @@
 import prisma from "../../prisma/prisma-client";;
-import { SignupUser } from "../utils/types";
+import { PrismaInputUserDTO } from "../utils/types";
 
-export const storeUser = async (userData: SignupUser) => {
+export const storeUser = async (userData: PrismaInputUserDTO) => {
   try {
     const user = await prisma.user.create({
       data: userData,
