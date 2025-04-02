@@ -1,5 +1,6 @@
 import prisma from "../../prisma/prisma-client";
-import { CreatedTour } from "../utils/types";
+
+import {  PrismaInputTourDTO } from "../utils/types";
 
 export const getTours = async () => {
   try {
@@ -11,7 +12,7 @@ export const getTours = async () => {
   }
 };
 
-export const storeTour = async (data: CreatedTour) => {
+export const storeTour = async (data: PrismaInputTourDTO) => {
   try {
     const tour = await prisma.offeredTour.create({
       data: data,
