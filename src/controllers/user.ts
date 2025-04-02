@@ -1,5 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+<<<<<<< HEAD
 import { UserInputEditUserDTO, UserInputUserDTO } from "../utils/types";
+=======
+import { UserInputUserDTO } from "../utils/types";
+>>>>>>> 42195eb (add the new types and transformers)
 import bcrypt from "bcrypt";
 import {
   storeUser,
