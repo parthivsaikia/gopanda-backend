@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-<<<<<<< HEAD
+
 import {
   deleteTourAction,
   findTourAction,
@@ -12,10 +12,7 @@ import {
   UserInputTourDTO,
   UserResponseTourDTO,
 } from "../utils/types";
-=======
-import { getTours, storeTour } from "../actions/tours";
-import { UserInputTourDTO, UserResponseTourDTO } from "../utils/types";
->>>>>>> d6e9ad5 (add the new types and transformers)
+
 import { Prisma, User } from "@prisma/client";
 import {
   convertBigIntToString,
@@ -42,13 +39,8 @@ export const getAllTours = async (
 
 export const createTour = async (
   req: Request<unknown, unknown, UserInputTourDTO>,
-<<<<<<< HEAD
   res: Response,
   next: NextFunction
-=======
-  res: Response<UserResponseTourDTO>,
-  next: NextFunction,
->>>>>>> d6e9ad5 (add the new types and transformers)
 ) => {
   const user = req.user as User;
   if (!user) {
