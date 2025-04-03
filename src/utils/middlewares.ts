@@ -20,3 +20,18 @@ export const isAgent = (req: Request, res: Response, next: NextFunction) => {
 export const requireJwtAuth = passport.authenticate("jwt", {
   session: false,
 }) as RequestHandler;
+
+export const isSelf = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = req.user as User;
+    if (!user) {
+      return res.status(401).json("user not found");
+    }
+    if (user.id === BigInt(req.params.id)) {
+      return next();
+    }
+    return res.status(403).json({ error: "Cannot view other's profile." });
+  } catch {
+    return res.status(500).json({ error: "server error" });
+  }
+};
