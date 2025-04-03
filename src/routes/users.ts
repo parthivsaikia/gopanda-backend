@@ -6,7 +6,7 @@ const userRouter = Router();
 
 userRouter.post("/", createUser);
 userRouter.get("/", getAllUsers);
-userRouter.put("/:id", editUser);
-userRouter.delete("/:id", deleteUser)
+userRouter.put("/:id", requireJwtAuth, isSelf, editUser);
+userRouter.delete("/:id", requireJwtAuth, isSelf, deleteUser);
 userRouter.get("/:id", requireJwtAuth, isSelf, getUser)
 export default userRouter;
