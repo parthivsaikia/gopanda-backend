@@ -118,3 +118,20 @@ export const deleteUser = async (
 //     next(error);
 //   }
 // };
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = BigInt(req.params.id);
+    const user = await findUser(id);
+    if (user) {
+      res.json(convertBigIntToString(user));
+    } else {
+      res.status(404).json("user not found");
+    }
+  } catch (error) {
+    next(error);
+  }
+};
