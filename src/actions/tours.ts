@@ -1,6 +1,6 @@
 import prisma from "../../prisma/prisma-client";
 
-import {  PrismaInputTourDTO } from "../utils/types";
+import { PrismaInputEditTourDTO, PrismaInputTourDTO } from "../utils/types";
 
 export const getTours = async () => {
   try {
@@ -23,6 +23,27 @@ export const storeTour = async (data: PrismaInputTourDTO) => {
       err instanceof Error
         ? `error creating new tour: ${err.message}`
         : `unknown error creating in new tour`;
+    throw new Error(errorMessage);
+  }
+};
+
+export const updateTourAction = async (
+  data: PrismaInputEditTourDTO,
+  id: bigint,
+) => {
+  try {
+    const tour = await prisma.offeredTour.update({
+      where: {
+        id: id,
+      },
+      data: data,
+    });
+    return tour;
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? `error updating tour: ${error.message}`
+        : `unknown error in updating tour`;
     throw new Error(errorMessage);
   }
 };
