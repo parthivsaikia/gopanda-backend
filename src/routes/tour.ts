@@ -4,7 +4,7 @@ import { isAgent, isSelf, requireJwtAuth } from "../utils/middlewares";
 const tourRouter = Router();
 
 tourRouter.get("/", getAllTours);
-tourRouter.post("/", requireJwtAuth, isAgent, createTour);
+tourRouter.post("/", requireJwtAuth, isAgent, isSelf, createTour);
 tourRouter.put("/:id", requireJwtAuth, isSelf, updateTour);
 tourRouter.delete("/:id", requireJwtAuth, isSelf, deleteTour);
 tourRouter.get("/:id", getTour);
