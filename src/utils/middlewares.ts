@@ -13,8 +13,11 @@ export const isAgent = (req: Request, res: Response, next: NextFunction) => {
     }
     return res.status(403).json({ error: "Not a travel agent" });
   } catch (error) {
-    const errorMessage = error instanceof Error ? `error in validating agent: ${error.message}` : `unknown error in validating agent`
-    throw new Error(errorMessage)
+    const errorMessage =
+      error instanceof Error
+        ? `error in validating agent: ${error.message}`
+        : `unknown error in validating agent`;
+    throw new Error(errorMessage);
   }
 };
 
@@ -33,8 +36,10 @@ export const isSelf = (req: Request, res: Response, next: NextFunction) => {
     }
     return res.status(403).json({ error: "Cannot view other's profile." });
   } catch (error) {
-    const errorMessage = error instanceof Error ? `error in validating self : ${error.message}` : `unknown error in validating self`
-    throw new Error(errorMessage)
+    const errorMessage =
+      error instanceof Error
+        ? `error in validating self : ${error.message}`
+        : `unknown error in validating self`;
+    throw new Error(errorMessage);
   }
-
 };
