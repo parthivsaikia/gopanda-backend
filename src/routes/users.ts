@@ -17,5 +17,4 @@ userRouter.post("/", createUser);
 userRouter.get("/", getAllUsers);
 userRouter.put("/:id", requireJwtAuth, isSelf, editUser);
 userRouter.delete("/:id", requireJwtAuth, isSelf, deleteUser);
-
 export default userRouter;
