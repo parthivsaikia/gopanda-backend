@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { getTours, storeTour } from "../actions/tours";
-import { UserInputTourDTO, UserResponseTourDTO } from "../utils/types";
+import { getTours, storeTour, updateTourAction } from "../actions/tours";
+import {
+  UserInputEditTourDTO,
+  UserInputTourDTO,
+  UserResponseTourDTO,
+} from "../utils/types";
 import { Prisma, User } from "@prisma/client";
 import {
   convertBigIntToString,
@@ -47,5 +51,20 @@ export const createTour = async (
     return res.json(toBeJsonTour);
   } catch (err) {
     next(err);
+  }
+};
+
+export const updateTour = async (
+  req: Request<{ id: string }, unknown, UserInputEditTourDTO>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const data = req.body;
+    const id = BigInt(req.params.id);
+    const updateTour = await updateTourAction(data, id);
+    res.json(convertBigIntToString(updateTour));
+  } catch (error) {
+    next(error);
   }
 };
