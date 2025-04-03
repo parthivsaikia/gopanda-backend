@@ -39,3 +39,15 @@ export const getUsers = async () => {
     throw new Error(`Error while retrieving users ${errorMessage}`);
   }
 };
+
+export async function findUser(id: bigint) {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: id
+    },
+    omit: {
+      password: true
+    }
+  });
+  return user;
+}
