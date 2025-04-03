@@ -1,4 +1,4 @@
-import { Itinerary, Prisma, User, UserRole } from "@prisma/client";
+import { Itinerary, OfferedTour, Prisma, User, UserRole } from "@prisma/client";
 
 //Data transfer Objects(DTO) for User
 
@@ -24,7 +24,19 @@ export type UserResponseUserDTO = Omit<User, "password" | "id"> & {
   id: string;
 };
 
-export type UserInputEditUserDTO = Partial<Pick<User, "username" | "password" | "email" | "country" | "image" | "emailVerified" | "mobileNumber" | "state">>;  
+export type UserInputEditUserDTO = Partial<
+  Pick<
+    User,
+    | "username"
+    | "password"
+    | "email"
+    | "country"
+    | "image"
+    | "emailVerified"
+    | "mobileNumber"
+    | "state"
+  >
+>;
 
 //DTO for tours
 export interface UserInputTourDTO {
@@ -52,6 +64,21 @@ export type PrismaInputTourDTO = {
   itineraries?: {
     create: Omit<Prisma.ItineraryCreateInput, "tour">[];
   };
+};
+
+export type UserInputEditTourDTO = Partial<
+  Pick<
+    OfferedTour,
+    "endDate" | "facilities" | "minimumPeople" | "price" | "startDate"
+  >
+>;
+
+export type PrismaInputEditTourDTO = {
+  endDate?: Date;
+  startDate?: Date;
+  facilities?: string[];
+  minimumPeople?: number;
+  price?: Prisma.Decimal;
 };
 
 export type UserResponseTourDTO = {

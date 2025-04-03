@@ -1,6 +1,16 @@
 import { Request, Response, NextFunction } from "express";
-import { getTours, storeTour } from "../actions/tours";
-import { UserInputTourDTO, UserResponseTourDTO } from "../utils/types";
+import {
+  deleteTourAction,
+  findTourAction,
+  getTours,
+  storeTour,
+  updateTourAction,
+} from "../actions/tours";
+import {
+  UserInputEditTourDTO,
+  UserInputTourDTO,
+  UserResponseTourDTO,
+} from "../utils/types";
 import { Prisma, User } from "@prisma/client";
 import {
   convertBigIntToString,
@@ -47,5 +57,52 @@ export const createTour = async (
     return res.json(toBeJsonTour);
   } catch (err) {
     next(err);
+  }
+};
+
+export const updateTour = async (
+  req: Request<{ id: string }, unknown, UserInputEditTourDTO>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const data = req.body;
+    const id = BigInt(req.params.id);
+    const updateTour = await updateTourAction(data, id);
+    res.json(convertBigIntToString(updateTour));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteTour = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = BigInt(req.params.id);
+    await deleteTourAction(id);
+    res.status(204).json("Tour deleted successfully.");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTour = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = BigInt(req.params.id);
+    const tour = await findTourAction(id);
+    if (tour) {
+      res.json(convertBigIntToString(tour));
+    } else {
+      res.status(404).json({ error: "tour not found" });
+    }
+  } catch (error) {
+    next(error);
   }
 };
