@@ -6,6 +6,7 @@ import {
   getUsers,
   changeUserData,
   deleteUserAction,
+  findUser,
 } from "../actions/users";
 import { convertBigIntToString } from "../utils/typeconverter";
 
@@ -56,8 +57,8 @@ export const getAllUsers = async (
   next: NextFunction,
 ) => {
   try {
-    const users = (await getUsers());
-    const jsonUsers = users.map(user => convertBigIntToString(user));
+    const users = await getUsers();
+    const jsonUsers = users.map((user) => convertBigIntToString(user));
     return res.status(200).json(jsonUsers);
   } catch (error) {
     next(error);
@@ -82,10 +83,33 @@ export async function editUser(
   }
 }
 
-export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const id = BigInt(req.params.id);
   try {
     await deleteUserAction(id);
+    res.status(204).json("User deleted successfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = BigInt(req.params.id);
+    const user = await findUser(id);
+    if (user) {
+      res.json(convertBigIntToString(user));
+    } else {
+      res.status(404).json("user not found");
+    }
   } catch (error) {
     next(error);
   }
