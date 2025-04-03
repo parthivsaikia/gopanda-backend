@@ -1,8 +1,7 @@
 import prisma from "../../prisma/prisma-client";
 
-import {  PrismaInputTourDTO } from "../utils/types";
-
 import { PrismaInputEditTourDTO, PrismaInputTourDTO } from "../utils/types";
+
 
 export const getTours = async () => {
   try {
