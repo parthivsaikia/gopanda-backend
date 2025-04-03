@@ -24,6 +24,8 @@ export type UserResponseUserDTO = Omit<User, "password" | "id"> & {
   id: string;
 };
 
+export type UserInputEditUserDTO = Partial<Pick<User, "username" | "password" | "email" | "country" | "image" | "emailVerified" | "mobileNumber" | "state">>;  
+
 //DTO for tours
 export interface UserInputTourDTO {
   minimumPeople: number;
