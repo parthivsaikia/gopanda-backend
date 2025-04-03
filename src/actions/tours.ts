@@ -47,3 +47,36 @@ export const updateTourAction = async (
     throw new Error(errorMessage);
   }
 };
+
+export const deleteTourAction = async (id: bigint) => {
+  try {
+    await prisma.offeredTour.delete({
+      where: {
+        id: id,
+      },
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? `error deleting tour: ${error.message}`
+        : `unknown error in deleting tour`;
+    throw new Error(errorMessage);
+  }
+};
+
+export const findTourAction = async (id: bigint) => {
+  try {
+    const tour = await prisma.offeredTour.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    return tour;
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? `error finding tour: ${error.message}`
+        : `unknown error in finding tour`;
+    throw new Error(errorMessage);
+  }
+};
