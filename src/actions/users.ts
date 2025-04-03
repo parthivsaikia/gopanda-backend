@@ -1,5 +1,5 @@
 import prisma from "../../prisma/prisma-client";;
-import { PrismaInputUserDTO } from "../utils/types";
+import { PrismaInputUserDTO, UserInputEditUserDTO } from "../utils/types";
 
 export const storeUser = async (userData: PrismaInputUserDTO) => {
   try {
@@ -23,6 +23,7 @@ export const getUsers = async () => {
   try {
     const users = await prisma.user.findMany({
       select: {
+        id: true,
         name: true,
         username: true,
         state: true,
@@ -39,3 +40,28 @@ export const getUsers = async () => {
     throw new Error(`Error while retrieving users ${errorMessage}`);
   }
 };
+
+export async function findUser(id: bigint) {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: id
+    },
+    omit: {
+      password: true
+    }
+  });
+  return user;
+}
+
+export const changeUserData = async (data: UserInputEditUserDTO, id: bigint) => {
+
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: id
+    },
+    data: data,
+    omit: {password: true}
+  });
+  return updatedUser;
+};
+

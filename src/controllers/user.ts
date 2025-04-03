@@ -1,7 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { UserInputUserDTO } from "../utils/types";
+import { UserInputEditUserDTO, UserInputUserDTO } from "../utils/types";
 import bcrypt from "bcrypt";
-import { storeUser, getUsers } from "../actions/users";
+import {
+  storeUser,
+  getUsers,
+  changeUserData,
+} from "../actions/users";
+import { convertBigIntToString } from "../utils/typeconverter";
 
 export const createUser = async (
   req: Request<unknown, unknown, UserInputUserDTO>,
@@ -50,9 +55,28 @@ export const getAllUsers = async (
   next: NextFunction,
 ) => {
   try {
-    const users = await getUsers();
-    return res.status(200).json(users);
+    const users = (await getUsers());
+    const jsonUsers = users.map(user => convertBigIntToString(user));
+    return res.status(200).json(jsonUsers);
   } catch (error) {
     next(error);
   }
 };
+
+export async function editUser(
+  req: Request<{ id: string }, unknown, UserInputEditUserDTO>,
+  res: Response,
+  next: NextFunction,
+) {
+  const id = BigInt(req.params.id);
+  const data = req.body;
+  try {
+    const editedUser = await changeUserData(data, id);
+    if (!editedUser) {
+      res.status(404).json({ error: "user not found to edit." });
+    }
+    res.json(convertBigIntToString(editedUser));
+  } catch (err) {
+    next(err);
+  }
+}
