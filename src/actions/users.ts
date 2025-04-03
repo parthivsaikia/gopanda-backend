@@ -1,4 +1,4 @@
-import prisma from "../../prisma/prisma-client";;
+import prisma from "../../prisma/prisma-client";
 import { PrismaInputUserDTO, UserInputEditUserDTO } from "../utils/types";
 
 export const storeUser = async (userData: PrismaInputUserDTO) => {
@@ -6,8 +6,8 @@ export const storeUser = async (userData: PrismaInputUserDTO) => {
     const user = await prisma.user.create({
       data: userData,
       omit: {
-        password: true
-      }
+        password: true,
+      },
     });
     return user;
   } catch (error) {
@@ -42,26 +42,59 @@ export const getUsers = async () => {
 };
 
 export async function findUser(id: bigint) {
-  const user = await prisma.user.findUnique({
-    where: {
-      id: id
-    },
-    omit: {
-      password: true
-    }
-  });
-  return user;
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      omit: {
+        password: true,
+      },
+    });
+    return user;
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? `error in finding user: ${error.message}`
+        : `unknown error occured while finding user.`;
+    throw new Error(errorMessage);
+  }
 }
 
-export const changeUserData = async (data: UserInputEditUserDTO, id: bigint) => {
-
-  const updatedUser = await prisma.user.update({
-    where: {
-      id: id
-    },
-    data: data,
-    omit: {password: true}
-  });
-  return updatedUser;
+export const changeUserData = async (
+  data: UserInputEditUserDTO,
+  id: bigint,
+) => {
+  try {
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: data,
+      omit: { password: true },
+    });
+    return updatedUser;
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? `error in changing user: ${error.message}`
+        : `unknown error occured while changing user.`;
+    throw new Error(errorMessage);
+  }
 };
 
+export const deleteUserAction = async (id: bigint) => {
+  try {
+    await prisma.user.delete({
+      where: {
+        id: id,
+      },
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? `error in deleting user: ${error.message}`
+        : `unknown error occured while deleting user.`;
+    throw new Error(errorMessage);
+  }
+};

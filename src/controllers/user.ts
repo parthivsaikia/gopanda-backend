@@ -5,6 +5,7 @@ import {
   storeUser,
   getUsers,
   changeUserData,
+  deleteUserAction,
 } from "../actions/users";
 import { convertBigIntToString } from "../utils/typeconverter";
 
@@ -80,3 +81,12 @@ export async function editUser(
     next(err);
   }
 }
+
+export const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+  const id = BigInt(req.params.id);
+  try {
+    await deleteUserAction(id);
+  } catch (error) {
+    next(error);
+  }
+};
