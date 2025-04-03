@@ -1,19 +1,28 @@
 import { NextFunction, Request, Response } from "express";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { UserInputEditUserDTO, UserInputUserDTO } from "../utils/types";
 =======
 import { UserInputUserDTO } from "../utils/types";
 >>>>>>> 42195eb (add the new types and transformers)
+=======
+import { UserInputEditUserDTO, UserInputUserDTO } from "../utils/types";
+>>>>>>> ba505cc (add editUser controller.)
 import bcrypt from "bcrypt";
 import {
   storeUser,
   getUsers,
   changeUserData,
+<<<<<<< HEAD
   deleteUserAction,
   findUser,
 } from "../actions/users";
 import { convertBigIntToString } from "../utils/typeconverter";
 import { User } from "@prisma/client";
+=======
+} from "../actions/users";
+import { convertBigIntToString } from "../utils/typeconverter";
+>>>>>>> ba505cc (add editUser controller.)
 
 export const createUser = async (
   req: Request<unknown, unknown, UserInputUserDTO>,
@@ -62,8 +71,13 @@ export const getAllUsers = async (
   next: NextFunction,
 ) => {
   try {
+<<<<<<< HEAD
     const users = await getUsers();
     const jsonUsers = users.map((user) => convertBigIntToString(user));
+=======
+    const users = (await getUsers());
+    const jsonUsers = users.map(user => convertBigIntToString(user));
+>>>>>>> ba505cc (add editUser controller.)
     return res.status(200).json(jsonUsers);
   } catch (error) {
     next(error);
@@ -87,6 +101,7 @@ export async function editUser(
     next(err);
   }
 }
+<<<<<<< HEAD
 
 export const deleteUser = async (
   req: Request,
@@ -120,3 +135,5 @@ export const deleteUser = async (
 //     next(error);
 //   }
 // };
+=======
+>>>>>>> ba505cc (add editUser controller.)
