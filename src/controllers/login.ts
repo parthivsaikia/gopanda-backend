@@ -2,8 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import passport from "passport";
 import { User } from "@prisma/client";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-dotenv.config();
+import { JWT_SECRET } from "../config/environment.config";
+// import dotenv from "dotenv";
+// dotenv.config();
 export const loginUser = (req: Request, res: Response, next: NextFunction) => {
   const authenticateMiddleware = passport.authenticate(
     "local",
@@ -32,7 +33,7 @@ export const loginUser = (req: Request, res: Response, next: NextFunction) => {
           sub: user.id.toString(),
           username: user.username,
         };
-        const token = jwt.sign(payload, process.env.JWT_SECRET || "", {
+        const token = jwt.sign(payload, JWT_SECRET || "", {
           expiresIn: "1h",
         });
         console.log(`Login successfull for ${user.username}`);

@@ -9,6 +9,7 @@ import {
   findUser,
 } from "../actions/users";
 import { convertBigIntToString } from "../utils/typeconverter";
+import { User } from "@prisma/client";
 
 export const createUser = async (
   req: Request<unknown, unknown, UserInputUserDTO>,
@@ -97,20 +98,21 @@ export const deleteUser = async (
   }
 };
 
-export const getUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const id = BigInt(req.params.id);
-    const user = await findUser(id);
-    if (user) {
-      res.json(convertBigIntToString(user));
-    } else {
-      res.status(404).json("user not found");
-    }
-  } catch (error) {
-    next(error);
-  }
-};
+// export const getUser = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const user = req.user as User;
+//     const id = BigInt(req.params.id);
+//     const foundUser = await findUser(id);
+//     if (user) {
+//       res.json(convertBigIntToString(user));
+//     } else {
+//       res.status(404).json("user not found");
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };
