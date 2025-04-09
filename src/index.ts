@@ -1,9 +1,6 @@
 import app from "./app";
-import { config } from "dotenv";
-config();
-
-const PORT = process.env.PORT;
+import { PORT, DATABASE_URL } from "./config/environment.config";
 
 app.listen(PORT, () => {
-  console.log("Server running on PORT", PORT);
+  console.log("Server running on PORT", PORT, DATABASE_URL);
 });
