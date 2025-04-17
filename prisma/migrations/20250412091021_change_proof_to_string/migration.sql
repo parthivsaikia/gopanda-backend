@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Person" ALTER COLUMN "proof" SET NOT NULL,
+ALTER COLUMN "proof" SET DATA TYPE TEXT;
