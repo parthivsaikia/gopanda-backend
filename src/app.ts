@@ -21,4 +21,5 @@ app.use("/login", loginRouter);
 app.use("/tours", tourRouter);
 app.use("/profile", profileRouter);
 app.use("/bookings", bookingRouter);
+app.use("/bookings", bookingRouter);
 export default app;
