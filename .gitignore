@@ -76,9 +76,7 @@ web_modules/
 .env
 .env.development.local
 .env.test.local
-.env.production
 .env.local
-.env.production
 .env.*
 .env.test
 .env.development
@@ -139,5 +137,4 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-.env.production
-.env.production
+
