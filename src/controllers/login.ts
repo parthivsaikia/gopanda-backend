@@ -32,6 +32,7 @@ export const loginUser = (req: Request, res: Response, next: NextFunction) => {
         const payload = {
           sub: user.id.toString(),
           username: user.username,
+          role: user.role,
         };
         const token = jwt.sign(payload, JWT_SECRET || "", {
           expiresIn: "1h",

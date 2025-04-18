@@ -2,6 +2,7 @@ import prisma from "../../prisma/prisma-client";
 
 import { PrismaInputEditTourDTO, PrismaInputTourDTO } from "../utils/types";
 
+
 export const getTours = async () => {
   try {
     const allTours = await prisma.offeredTour.findMany();

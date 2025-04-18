@@ -7,6 +7,6 @@ tourRouter.get("/", getAllTours);
 tourRouter.post("/", requireJwtAuth, isAgent, isSelf, createTour);
 tourRouter.put("/:id", requireJwtAuth, isSelf, updateTour);
 tourRouter.delete("/:id", requireJwtAuth, isSelf, deleteTour);
-tourRouter.get("/:id", getTour)
+tourRouter.get("/:id", getTour);
 
 export default tourRouter;

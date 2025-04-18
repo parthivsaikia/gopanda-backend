@@ -6,6 +6,7 @@ import loginRouter from "./routes/login";
 import("./config/passport-config");
 import tourRouter from "./routes/tour";
 import profileRouter from "./routes/profile";
+import bookingRouter from "./routes/bookings";
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use("/users", userRouter);
 app.use("/login", loginRouter);
 app.use("/tours", tourRouter);
 app.use("/profile", profileRouter);
-
+app.use("/tours", tourRouter);
+app.use("/bookings", bookingRouter);
 export default app;
