@@ -1,0 +1,264 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//NOTE :1. id's are to be kept BigInt in all the models to avoid mismatch when joining tables.
+//2. Follow PascalCase for the name of the models and camelCase for the fields of the models.
+
+//user can be customer or agent
+//this role will be used in express.js to give some permissions
+
+enum UserRole {
+  Customer
+  TravelAgent
+}
+
+model User {
+  id                   BigInt         @id @default(autoincrement())
+  username             String         @unique
+  password             String //has to be stored as hash using bcrypt
+  email                String?        @unique //email is not necessary for sign up
+  mobileNumber         String         @unique
+  state                String
+  country              String
+  sentMessages         Message[]      @relation("sender")
+  receivedMessages     Message[]      @relation("receiver")
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  role                 UserRole
+  offeredTours         OfferedTour[] //users with role TravelAgent will be able to offer tours.
+  reviews              Review[]
+  searchHistory        SearchHistory?
+  bookingsFromCustomer Booking[]      @relation("customer")
+  wishList             WishList?
+  notification         Notification?
+
+  name          String
+  emailVerified Boolean   @default(false)
+  image         String?
+  accounts      Account[]
+
+  //indexing is done for faster lookups in the table when the size of the table grows.
+  @@index([id, username, email])
+  @@map("user")
+}
+
+//for now only text messages are available. Multimedia messages will be covered in the future.
+
+model Message {
+  id         BigInt   @id @default(autoincrement())
+  text       String
+  sender     User     @relation("sender", fields: [senderId], references: [id])
+  senderId   BigInt
+  receiver   User     @relation("receiver", fields: [receiverId], references: [id])
+  receiverId BigInt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([id, senderId, receiverId])
+}
+
+model OfferedTour {
+  id            BigInt      @id @default(autoincrement())
+  minimumPeople Int
+  price         Decimal
+  itineraries   Itinerary[]
+  facilities    String[] //different facilities to be stored as different strings
+  agent         User        @relation(fields: [agentId], references: [id])
+  agentId       BigInt
+  bookings      Booking[]
+  WishList      WishList[]
+  startDate     DateTime
+  endDate       DateTime
+  reviews       Review[]
+
+  @@index([id, agentId])
+}
+
+model Place {
+  id        BigInt      @id @default(autoincrement())
+  name      String
+  location  String //url of location
+  photos    String[] //array of urls to be rendered
+  reviews   Review[]
+  rating    Decimal
+  itinerary Itinerary[]
+
+  @@index([id])
+}
+
+model Review {
+  id            BigInt      @id @default(autoincrement())
+  star          Int
+  text          String
+  photos        String[]
+  Place         Place?      @relation(fields: [placeId], references: [id]) //review can be of place
+  placeId       BigInt?
+  agent         User        @relation(fields: [agentId], references: [id]) //review can be of agent
+  agentId       BigInt
+  offeredTour   OfferedTour @relation(fields: [offeredTourId], references: [id])
+  offeredTourId BigInt
+
+  @@index([id, placeId, agentId])
+}
+
+model SearchHistory {
+  id     BigInt   @id @default(autoincrement())
+  search String[]
+  user   User     @relation(fields: [userId], references: [id])
+  userId BigInt   @unique
+
+  @@index([id])
+}
+
+//booking status enum
+
+enum BookingStatus {
+  Pending
+  Confirmed
+  Cancelled
+  Completed
+}
+
+model Booking {
+  id         BigInt        @id @default(autoincrement())
+  customer   User          @relation("customer", fields: [customerId], references: [id])
+  customerId BigInt
+  tour       OfferedTour   @relation(fields: [tourId], references: [id])
+  tourId     BigInt
+  persons    Person[]
+  noOfPeople Int
+  status     BookingStatus @default(Pending)
+  totalPrice Decimal //offeredTour.price * noOfPeople
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  payment    Payment?
+
+  @@index([id, customerId, tourId])
+}
+
+//model for people who are not users e.g. a person can book for the whole family without creating accounts for all
+
+model Person {
+  id        BigInt  @id @default(autoincrement())
+  name      String
+  age       Int
+  proof     String //proof like aadhar card or pan card
+  bookings  Booking @relation(fields: [bookingId], references: [id])
+  bookingId BigInt
+
+  @@index([id, bookingId])
+}
+
+enum PaymentStatus {
+  Success
+  Pending
+  Failure
+  Refunded
+}
+
+//incomplete for now
+
+model Payment {
+  id            BigInt        @id @default(autoincrement())
+  method        String
+  status        PaymentStatus
+  booking       Booking?      @relation(fields: [bookingId], references: [id])
+  bookingId     BigInt?       @unique
+  amount        Decimal
+  transactionId String        @unique
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Itinerary {
+  id         BigInt      @id @default(autoincrement())
+  activities Activity[]
+  day        Int //e.g. day1, day2
+  place      Place?      @relation(fields: [placeId], references: [id])
+  startTime  DateTime
+  endTime    DateTime
+  placeId    BigInt?
+  tour       OfferedTour @relation(fields: [tourId], references: [id])
+  tourId     BigInt
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@index([id, placeId, tourId])
+}
+
+model Activity {
+  id          BigInt    @id @default(autoincrement())
+  title       String
+  itinerary   Itinerary @relation(fields: [itineraryId], references: [id])
+  itineraryId BigInt
+
+  @@index([id, itineraryId])
+}
+
+//Notification type
+
+enum NotificationType {
+  Warning
+  Greeting
+  Information
+}
+
+model Notification {
+  id        BigInt           @id @default(autoincrement())
+  text      String
+  type      NotificationType
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  user      User             @relation(fields: [userId], references: [id])
+  userId    BigInt           @unique
+
+  @@index([id, userId])
+}
+
+model WishList {
+  id        BigInt        @id @default(autoincrement())
+  tours     OfferedTour[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  user      User          @relation(fields: [userId], references: [id])
+  userId    BigInt        @unique
+
+  @@index([id, userId])
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                BigInt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}

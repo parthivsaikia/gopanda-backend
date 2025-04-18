@@ -109,5 +109,3 @@ export const getTour = async (
     next(error);
   }
 };
-
-

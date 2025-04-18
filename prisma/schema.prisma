@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "./generated/prisma"
 }
 
 datasource db {
@@ -133,11 +134,12 @@ model Booking {
   tourId     BigInt
   persons    Person[]
   noOfPeople Int
-  status     BookingStatus
+  status     BookingStatus @default(Pending)
   totalPrice Decimal //offeredTour.price * noOfPeople
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
   Payment    Payment?
+  paymentId  BigInt
 
   @@index([id, customerId, tourId])
 }
