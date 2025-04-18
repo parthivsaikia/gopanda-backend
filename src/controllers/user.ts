@@ -1,12 +1,21 @@
-import { Request, Response } from "express";
-import { SignupUser } from "../utils/types";
+import { NextFunction, Request, Response } from "express";
+import { UserInputEditUserDTO, UserInputUserDTO } from "../utils/types";
 import bcrypt from "bcrypt";
-import { storeUser, getUsers } from "../actions/users";
+import {
+  storeUser,
+  getUsers,
+  changeUserData,
+  deleteUserAction,
+  findUser,
+} from "../actions/users";
+import { convertBigIntToString } from "../utils/typeconverter";
+import { User } from "@prisma/client";
 
 export const createUser = async (
-  req: Request<unknown, unknown, SignupUser>,
+  req: Request<unknown, unknown, UserInputUserDTO>,
   res: Response,
-) => {
+  next: NextFunction,
+): Promise<void> => {
   const {
     username,
     name,
@@ -17,6 +26,13 @@ export const createUser = async (
     country,
     role,
   } = req.body;
+  if (!username || !password || !email) {
+    // Use return here as it's a client error, not unexpected
+    res
+      .status(400)
+      .json({ message: "Username, email, and password are required." });
+    return;
+  }
   const saltRound = 10;
   const hashedPassword = await bcrypt.hash(password, saltRound);
   try {
@@ -30,17 +46,73 @@ export const createUser = async (
       country,
       role,
     });
-    res.json(user);
+    res.status(201).json({ ...user, id: Number(user.id) });
   } catch (error) {
-    const errorMessage =
-      error instanceof Error
-        ? `Error in creating user : ${error.message}`
-        : `unknown error`;
-    res.status(400).json(errorMessage);
+    next(error);
   }
 };
 
-export const getAllUsers = async (req: Request, res: Response) => {
-  const users = await getUsers();
-  res.json(users);
+export const getAllUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const users = await getUsers();
+    const jsonUsers = users.map((user) => convertBigIntToString(user));
+    return res.status(200).json(jsonUsers);
+  } catch (error) {
+    next(error);
+  }
 };
+
+export async function editUser(
+  req: Request<{ id: string }, unknown, UserInputEditUserDTO>,
+  res: Response,
+  next: NextFunction,
+) {
+  const id = BigInt(req.params.id);
+  const data = req.body;
+  try {
+    const editedUser = await changeUserData(data, id);
+    if (!editedUser) {
+      res.status(404).json({ error: "user not found to edit." });
+    }
+    res.json(convertBigIntToString(editedUser));
+  } catch (err) {
+    next(err);
+  }
+}
+
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const id = BigInt(req.params.id);
+  try {
+    await deleteUserAction(id);
+    res.status(204).json("User deleted successfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
+// export const getUser = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const user = req.user as User;
+//     const id = BigInt(req.params.id);
+//     const foundUser = await findUser(id);
+//     if (user) {
+//       res.json(convertBigIntToString(user));
+//     } else {
+//       res.status(404).json("user not found");
+//     }
+//   } catch (error) {
+//     next(error);
+//   }
+// };

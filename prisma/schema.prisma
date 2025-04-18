@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "./generated/prisma"
 }
 
 datasource db {
@@ -7,7 +8,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//NOTE :1. id's are to be kept BigInt in all the models to avoid mismatch when joining tables.
+// NOTE:1. id's are to be kept BigInt in all the models to avoid mismatch when joining tables.
+// TODO: 1
 //2. Follow PascalCase for the name of the models and camelCase for the fields of the models.
 
 //user can be customer or agent
@@ -133,11 +135,12 @@ model Booking {
   tourId     BigInt
   persons    Person[]
   noOfPeople Int
-  status     BookingStatus
+  status     BookingStatus @default(Pending)
   totalPrice Decimal //offeredTour.price * noOfPeople
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
   Payment    Payment?
+  paymentId  BigInt
 
   @@index([id, customerId, tourId])
 }
