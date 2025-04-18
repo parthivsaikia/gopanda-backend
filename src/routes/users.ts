@@ -8,6 +8,8 @@ import {
 } from "../controllers/user";
 import { isSelf, requireJwtAuth } from "../utils/middlewares";
 
+
+
 const userRouter = Router();
 // TODO this or requireJwtAuth
 userRouter.post("/", createUser);

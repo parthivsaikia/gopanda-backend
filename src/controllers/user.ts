@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
+
 import { UserInputEditUserDTO, UserInputUserDTO } from "../utils/types";
+
 import bcrypt from "bcrypt";
 import {
   storeUser,
@@ -8,8 +10,8 @@ import {
   deleteUserAction,
   findUser,
 } from "../actions/users";
-import { convertBigIntToString } from "../utils/typeconverter";
 import { User } from "@prisma/client";
+import { convertBigIntToString } from "../utils/typeconverter";
 
 export const createUser = async (
   req: Request<unknown, unknown, UserInputUserDTO>,
@@ -116,3 +118,20 @@ export const deleteUser = async (
 //     next(error);
 //   }
 // };
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = BigInt(req.params.id);
+    const user = await findUser(id);
+    if (user) {
+      res.json(convertBigIntToString(user));
+    } else {
+      res.status(404).json("user not found");
+    }
+  } catch (error) {
+    next(error);
+  }
+};
